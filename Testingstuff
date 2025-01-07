@@ -1,5 +1,5 @@
 --// Key System Setup
-getgenv().ValidKey = "nigga132" -- Set your unique key here
+getgenv().ValidKey = "Localmadethisnigga" -- Set your unique key here
 getgenv().InputKey = "" -- This will store the input key by the user
 
 --// Services
@@ -19,6 +19,22 @@ local FOVCircle = Drawing.new("Circle")
 local HoldingKey = false
 local CurrentMousePos = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
 local IsAuthenticated = false -- Flag to check if the key is correct
+
+--// Create the TextLabel for displaying "#localmadethis" on the top left
+local ScreenGui = Instance.new("ScreenGui")
+local TextLabel = Instance.new("TextLabel")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "TopLeftText"
+
+TextLabel.Parent = ScreenGui
+TextLabel.Size = UDim2.new(0, 200, 0, 50)  -- Set size of the label
+TextLabel.Position = UDim2.new(0, 10, 0, 10)  -- Position it in the top-left corner
+TextLabel.Text = "#localmadethis"  -- The text to display
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text color
+TextLabel.BackgroundTransparency = 1  -- Make background transparent
+TextLabel.TextSize = 24  -- Set text size
+TextLabel.Font = Enum.Font.SourceSans  -- Set the font type
 
 --// Functions
 
@@ -75,93 +91,6 @@ end
 
 -- Now that we are authenticated, we can continue with the rest of the script.
 
--- Setup for the Player, Camera, and UserInput
-getgenv().Prediction = 0.15038
-getgenv().AimPart = "HumanoidRootPart" -- Default Aim Part
-getgenv().Key = Enum.KeyCode.Z -- Key to hold for lock-on
-getgenv().DisableKey = Enum.KeyCode.P -- Key to enable/disable aimlock
-getgenv().AutoPrediction = true
-
-getgenv().FOV = true
-getgenv().ShowFOV = true
-getgenv().FOVSize = 100
-getgenv().Smoothness = 0.35 -- The smoothness value for gradual target locking
-
-getgenv().AutoJumpOffset = true -- Whether to automatically calculate jump offset
-
---// Services
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
-local GuiService = game:GetService("GuiService")
-local UserInputService = game:GetService("UserInputService")
-
---// Variables
-local LocalPlayer = Players.LocalPlayer
-local Camera = Workspace.CurrentCamera
-local AimlockState = true
-local Victim = nil
-local FOVCircle = Drawing.new("Circle")
-local HoldingKey = false
-local CurrentMousePos = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
-
---// FOV Circle Setup
-FOVCircle.Thickness = 2
-FOVCircle.Filled = false
-FOVCircle.Color = Color3.fromRGB(255, 255, 0)
-FOVCircle.Transparency = 1
-FOVCircle.Visible = getgenv().ShowFOV
-FOVCircle.Radius = getgenv().FOVSize
-
---// Functions
-
-function UpdateFOV()
-    FOVCircle.Visible = getgenv().ShowFOV
-    local mouseLocation = UserInputService:GetMouseLocation()
-    FOVCircle.Position = Vector2.new(mouseLocation.X, mouseLocation.Y + GuiService:GetGuiInset().Y)
-end
-
-function IsVisible(part)
-    local origin = Camera.CFrame.Position
-    local direction = (part.Position - origin).Unit * (part.Position - origin).Magnitude
-    local ray = Ray.new(origin, direction)
-    local hitPart, _ = Workspace:FindPartOnRayWithIgnoreList(ray, {LocalPlayer.Character})
-    return hitPart and hitPart:IsDescendantOf(part.Parent)
-end
-
---// Fix FOV to not include players behind you
-function IsInFOV(player)
-    local screenPos = Camera:WorldToViewportPoint(player.Character[getgenv().AimPart].Position)
-    local distance = (Vector2.new(screenPos.X, screenPos.Y) - UserInputService:GetMouseLocation()).Magnitude
-    return distance < getgenv().FOVSize and screenPos.Z > 0
-end
-
-function GetClosest()
-    local closestPlayer = nil
-    local shortestDistance = math.huge
-
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
-            local targetPart = player.Character:FindFirstChild(getgenv().AimPart)
-            if targetPart and IsVisible(targetPart) and IsInFOV(player) then
-                local screenPos = Camera:WorldToViewportPoint(targetPart.Position)
-                local distance = (Vector2.new(screenPos.X, screenPos.Y) - UserInputService:GetMouseLocation()).Magnitude
-                if getgenv().FOV and distance < getgenv().FOVSize then
-                    if distance < shortestDistance then
-                        closestPlayer = player
-                        shortestDistance = distance
-                    end
-                elseif not getgenv().FOV and distance < shortestDistance then
-                    closestPlayer = player
-                    shortestDistance = distance
-                end
-            end
-        end
-    end
-    return closestPlayer
-end
-
--- Rest of the original script continues here...
 -- Setup for the Player, Camera, and UserInput
 getgenv().Prediction = 0.15038
 getgenv().AimPart = "HumanoidRootPart" -- Default Aim Part
@@ -247,148 +176,3 @@ function GetClosest()
     end
     return closestPlayer
 end
-
---// Hitbox-based Prediction Adjustments for DaHood Knockoffs
-function AdjustPredictionBasedOnHitbox(player)
-    local targetCharacter = player.Character
-    if targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart") then
-        local hitboxSize = targetCharacter.HumanoidRootPart.Size.Magnitude  -- Base size of HumanoidRootPart
-        local headSize = targetCharacter:FindFirstChild("Head") and targetCharacter.Head.Size.Magnitude or 0
-        local torsoSize = targetCharacter:FindFirstChild("Torso") and targetCharacter.Torso.Size.Magnitude or 0
-
-        -- Combine sizes of major hitbox parts (HumanoidRootPart, Head, Torso)
-        local totalHitboxSize = hitboxSize + headSize + torsoSize
-
-        -- Adjust prediction based on total hitbox size (larger hitboxes = higher prediction)
-        if totalHitboxSize <= 1 then
-            return 0.12
-        elseif totalHitboxSize <= 2 then
-            return 0.13
-        elseif totalHitboxSize <= 3 then
-            return 0.14
-        elseif totalHitboxSize <= 4 then
-            return 0.15
-        elseif totalHitboxSize <= 5 then
-            return 0.16
-        elseif totalHitboxSize <= 6 then
-            return 0.17
-        elseif totalHitboxSize <= 7 then
-            return 0.18
-        elseif totalHitboxSize <= 8 then
-            return 0.19
-        elseif totalHitboxSize <= 9 then
-            return 0.20
-        elseif totalHitboxSize <= 10 then
-            return 0.21
-        elseif totalHitboxSize <= 11 then
-            return 0.22
-        elseif totalHitboxSize <= 12 then
-            return 0.23
-        elseif totalHitboxSize <= 13 then
-            return 0.24
-        elseif totalHitboxSize <= 14 then
-            return 0.25
-        elseif totalHitboxSize <= 15 then
-            return 0.26
-        elseif totalHitboxSize <= 16 then
-            return 0.27
-        elseif totalHitboxSize <= 17 then
-            return 0.28
-        elseif totalHitboxSize <= 18 then
-            return 0.29
-        elseif totalHitboxSize <= 19 then
-            return 0.30
-        elseif totalHitboxSize <= 20 then
-            return 0.31
-        else
-            return 0.32
-        end
-    end
-    return 0.18 -- Default prediction if hitbox is not found
-end
-
---// Ping-based Prediction Adjustment
-function AdjustPredictionBasedOnPing()
-    local ping = tonumber(string.match(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString(), "%d+"))
-    -- Scale prediction starting from 50ms
-    local prediction = 0.12
-    if ping > 50 then
-        prediction = 0.12 + ((ping - 50) / 10) * 0.02  -- Increase prediction by 0.02 per 10ms after 50ms
-    end
-    -- Cap the prediction value to a maximum of 0.30 for ping higher than 300ms
-    return math.min(prediction, 0.30)
-end
-
-function CombinePredictions(hitboxPrediction, pingPrediction)
-    -- Combine both predictions with some weighting
-    local finalPrediction = (hitboxPrediction + pingPrediction) / 2
-    return finalPrediction
-end
-
---// Jump Offset Calculation
-function GetJumpOffset(player)
-    local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
-    if humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping then
-        local velocity = player.Character.HumanoidRootPart.AssemblyLinearVelocity
-        -- Calculate the predicted jump offset based on velocity
-        local jumpOffset = velocity.Y * 0.1 -- Basic scale factor for Y velocity
-        return jumpOffset
-    end
-    return 0.11 -- Fallback if not jumping
-end
-
-function SmoothLockOntoTarget()
-    if Victim and Victim.Character and AimlockState and HoldingKey then
-        local targetPart = Victim.Character:FindFirstChild(getgenv().AimPart)
-        if targetPart then
-            -- Apply prediction based on the target's hitbox size
-            local hitboxPrediction = AdjustPredictionBasedOnHitbox(Victim)
-            -- Apply prediction based on the ping
-            local pingPrediction = AdjustPredictionBasedOnPing()
-            -- Combine both hitbox and ping predictions
-            local combinedPrediction = CombinePredictions(hitboxPrediction, pingPrediction)
-
-            -- Jump offset adjustment if enabled
-            local jumpOffset = getgenv().AutoJumpOffset and GetJumpOffset(Victim) or 0.11
-
-            -- Apply the jump offset to the target's position
-            local targetPosition = targetPart.Position + targetPart.Velocity * combinedPrediction + Vector3.new(0, jumpOffset, 0)
-            local smoothPos = Camera.CFrame.Position:Lerp(CFrame.new(Camera.CFrame.Position, targetPosition).Position, getgenv().Smoothness)
-            Camera.CFrame = CFrame.new(smoothPos, targetPosition)
-        else
-            Victim = nil
-        end
-    end
-end
-
---// Event Listeners
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == getgenv().Key then
-        HoldingKey = true
-        Victim = GetClosest()
-    elseif not gameProcessed and input.KeyCode == getgenv().DisableKey then
-        AimlockState = not AimlockState
-    elseif not gameProcessed and input.KeyCode == Enum.KeyCode.N then
-        -- Toggle between Head and HumanoidRootPart
-        if getgenv().AimPart == "HumanoidRootPart" then
-            getgenv().AimPart = "Head"
-        else
-            getgenv().AimPart = "HumanoidRootPart"
-        end
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input, gameProcessed)
-    if input.KeyCode == getgenv().Key then
-        HoldingKey = false
-        Victim = nil
-    end
-end)
-
-RunService.RenderStepped:Connect(function()
-    UpdateFOV()
-    if getgenv().AutoPrediction then
-        -- Adjusting the prediction based on ping and hitbox is handled separately
-    end
-    SmoothLockOntoTarget()
-end)
