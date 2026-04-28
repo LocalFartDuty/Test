@@ -80,8 +80,15 @@ end
 --// Orion Adapter
 local function OrionCreateWindow(_3, _4)
     local _5 = _G.UILibrary
+    -- Orion requires creating a window first
+    local _window = _5:MakeWindow({
+        Name = _3,
+        HidePremium = false,
+        SaveConfig = false,
+        ConfigFolder = nil
+    })
     return {
-        _lib = _5,
+        _lib = _window,
         CreateTab = function(self, _6, _7)
             local _8 = self._lib:MakeTab({
                 Name = _6,
