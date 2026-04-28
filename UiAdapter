@@ -1,0 +1,264 @@
+--// UI Adapter Layer
+--// Provides unified interface for all UI libraries
+
+local _0 = _G.UILibrary
+local _1 = _G.UILibName or "Frosty"
+
+local _2 = {}
+
+--// Frosty Adapter
+if _1 == "Frosty" then
+    function _2.CreateWindow(_3, _4)
+        local _5 = _0:create("window", _3, {
+            resizable = true,
+            default_position = UDim2.new(0, 400, 0, 100),
+            default_size = UDim2.new(0, 500, 0, 400),
+            min = {400, 300},
+            max = {800, 600}
+        })
+        return {
+            _lib = _5,
+            CreateTab = function(self, _6, _7)
+                local _8 = self._lib:create("column", 200)
+                return {
+                    _lib = _8,
+                    AddSection = function(self, _9)
+                        return {
+                            _lib = self._lib,
+                            AddLabel = function(self, _10)
+                                self._lib:create("label", {
+                                    text = _10,
+                                    Font = "SourceSans",
+                                    size = 14,
+                                    color = Color3.fromRGB(255, 255, 255)
+                                })
+                            end,
+                            AddToggle = function(self, _11, _12, _13)
+                                self._lib:create("toggle", _11, _12, _13)
+                            end,
+                            AddSlider = function(self, _14, _15, _16, _17, _18, _19)
+                                self._lib:create("slider", _14, _15, _16, _17, _19 or "")
+                            end,
+                            AddDropdown = function(self, _20, _21, _22, _23)
+                                self._lib:create("dropdown", _20, _21, _22, _23)
+                            end,
+                            AddButton = function(self, _24, _25)
+                                self._lib:create("button", _24, _25)
+                            end,
+                            AddColorpicker = function(self, _26, _27, _28)
+                                self._lib:create("color_picker", _26, _27, _28)
+                            end
+                        }
+                    end
+                }
+            end
+        }
+    end
+end
+
+--// Pepsi Adapter
+if _1 == "Pepsi" then
+    function _2.CreateWindow(_3, _4)
+        local _5 = _0
+        return {
+            _lib = _5,
+            CreateTab = function(self, _6, _7)
+                local _8 = self._lib:CreateTab({
+                    Name = _6,
+                    Image = _7
+                })
+                return {
+                    _lib = _8,
+                    AddSection = function(self, _9)
+                        local _10 = self._lib:CreateSection({
+                            Name = _9
+                        })
+                        return {
+                            _lib = _10,
+                            AddLabel = function(self, _11)
+                                self._lib:AddLabel({
+                                    Text = _11
+                                })
+                            end,
+                            AddToggle = function(self, _12, _13, _14)
+                                self._lib:AddToggle({
+                                    Name = _12,
+                                    Value = _13,
+                                    Callback = _14
+                                })
+                            end,
+                            AddSlider = function(self, _15, _16, _17, _18, _19, _20)
+                                self._lib:AddSlider({
+                                    Name = _15,
+                                    Value = _16,
+                                    Min = 0,
+                                    Max = _17,
+                                    Callback = _18,
+                                    Format = _20 and (function(_21) return tostring(_21) .. _20 end) or nil
+                                })
+                            end,
+                            AddDropdown = function(self, _22, _23, _24, _25)
+                                self._lib:AddDropdown({
+                                    Name = _22,
+                                    Value = _23[_24] or _23[1],
+                                    List = _23,
+                                    Callback = _25
+                                })
+                            end,
+                            AddButton = function(self, _26, _27)
+                                self._lib:AddButton({
+                                    Name = _26,
+                                    Callback = _27
+                                })
+                            end,
+                            AddColorpicker = function(self, _28, _29, _30)
+                                self._lib:AddColorpicker({
+                                    Name = _28,
+                                    Value = _29,
+                                    Callback = _30
+                                })
+                            end
+                        }
+                    end
+                }
+            end
+        }
+    end
+end
+
+--// Orion Adapter
+if _1 == "Orion" then
+    function _2.CreateWindow(_3, _4)
+        local _5 = _0
+        return {
+            _lib = _5,
+            CreateTab = function(self, _6, _7)
+                local _8 = self._lib:MakeTab({
+                    Name = _6,
+                    Icon = _7
+                })
+                return {
+                    _lib = _8,
+                    AddSection = function(self, _9)
+                        return {
+                            _lib = self._lib,
+                            AddLabel = function(self, _10)
+                                self._lib:AddLabel(_10)
+                            end,
+                            AddToggle = function(self, _11, _12, _13)
+                                self._lib:AddToggle({
+                                    Name = _11,
+                                    Default = _12,
+                                    Callback = _13
+                                })
+                            end,
+                            AddSlider = function(self, _14, _15, _16, _17, _18, _19)
+                                self._lib:AddSlider({
+                                    Name = _14,
+                                    Min = 0,
+                                    Max = _16,
+                                    Default = _15,
+                                    Increment = 1,
+                                    ValueName = _19 or "",
+                                    Callback = _17
+                                })
+                            end,
+                            AddDropdown = function(self, _20, _21, _22, _23)
+                                self._lib:AddDropdown({
+                                    Name = _20,
+                                    Default = _21[_22] or _21[1],
+                                    Options = _21,
+                                    Callback = _23
+                                })
+                            end,
+                            AddButton = function(self, _24, _25)
+                                self._lib:AddButton({
+                                    Name = _24,
+                                    Callback = _25
+                                })
+                            end,
+                            AddColorpicker = function(self, _26, _27, _28)
+                                self._lib:AddColorpicker({
+                                    Name = _26,
+                                    Default = _27,
+                                    Callback = _28
+                                })
+                            end
+                        }
+                    end
+                }
+            end
+        }
+    end
+end
+
+--// Sero Adapter
+if _1 == "Sero" then
+    function _2.CreateWindow(_3, _4)
+        local _5 = _0
+        return {
+            _lib = _5,
+            CreateTab = function(self, _6, _7)
+                local _8, _9 = self._lib:AddTab(_6, _7)
+                return {
+                    _lib = _8,
+                    AddSection = function(self, _10)
+                        local _11 = self._lib:AddSeperator(_10)
+                        return {
+                            _lib = _11,
+                            AddLabel = function(self, _12)
+                                -- Sero doesn't have a direct label, using a disabled toggle
+                                self._lib:AddToggle({
+                                    title = _12,
+                                    checked = false,
+                                    callback = function() end
+                                })
+                            end,
+                            AddToggle = function(self, _13, _14, _15)
+                                self._lib:AddToggle({
+                                    title = _13,
+                                    checked = _14,
+                                    callback = _15
+                                })
+                            end,
+                            AddSlider = function(self, _16, _17, _18, _19, _20, _21)
+                                self._lib:AddSlider({
+                                    title = _16,
+                                    values = {min = 0, max = _18, default = _17},
+                                    callback = _19
+                                })
+                            end,
+                            AddDropdown = function(self, _22, _23, _24, _25)
+                                self._lib:AddDropdown({
+                                    title = _22,
+                                    options = _23,
+                                    callback = function(_26, _27)
+                                        _25(_23[_26] or _23[1])
+                                    end
+                                })
+                            end,
+                            AddButton = function(self, _28, _29)
+                                self._lib:AddButton({
+                                    title = _28,
+                                    callback = _29
+                                })
+                            end,
+                            AddColorpicker = function(self, _30, _31, _32)
+                                -- Sero colorpicker is integrated into toggles
+                                self._lib:AddToggle({
+                                    title = _30,
+                                    colorpicker = {
+                                        default = _31,
+                                        callback = _32
+                                    }
+                                })
+                            end
+                        }
+                    end
+                }
+            end
+        }
+    end
+end
+
+return _2
