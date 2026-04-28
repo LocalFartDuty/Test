@@ -1,61 +1,12 @@
 --// UI Adapter Layer
---// Provides unified interface for all UI libraries
+--// Provides unified interface for Sero, Pepsi, and Orion UI libraries
 
 local _2 = {}
 
 --// Initialize the adapter with UI library and name
 function _2.Initialize(uiLibName, uiLibrary)
-    _G.UILibName = uiLibName or "Frosty"
+    _G.UILibName = uiLibName or "Orion"
     _G.UILibrary = uiLibrary
-end
-
---// Frosty Adapter
-local function FrostyCreateWindow(_3, _4)
-    local _0 = _G.UILibrary
-    local _5 = _0:create("window", _3, {
-        resizable = true,
-        default_position = UDim2.new(0, 400, 0, 100),
-        default_size = UDim2.new(0, 500, 0, 400),
-        min = {400, 300},
-        max = {800, 600}
-    })
-    return {
-        _lib = _5,
-        CreateTab = function(self, _6, _7)
-            local _8 = self._lib:create("column", 200)
-            return {
-                _lib = _8,
-                AddSection = function(self, _9)
-                    return {
-                        _lib = self._lib,
-                        AddLabel = function(self, _10)
-                            self._lib:create("label", {
-                                text = _10,
-                                Font = "SourceSans",
-                                size = 14,
-                                color = Color3.fromRGB(255, 255, 255)
-                            })
-                        end,
-                        AddToggle = function(self, _11, _12, _13)
-                            self._lib:create("toggle", _11, _12, _13)
-                        end,
-                        AddSlider = function(self, _14, _15, _16, _17, _18, _19)
-                            self._lib:create("slider", _14, _15, _16, _17, _19 or "")
-                        end,
-                        AddDropdown = function(self, _20, _21, _22, _23)
-                            self._lib:create("dropdown", _20, _21, _22, _23)
-                        end,
-                        AddButton = function(self, _24, _25)
-                            self._lib:create("button", _24, _25)
-                        end,
-                        AddColorpicker = function(self, _26, _27, _28)
-                            self._lib:create("color_picker", _26, _27, _28)
-                        end
-                    }
-                end
-            }
-        end
-    }
 end
 
 --// Pepsi Adapter
@@ -257,10 +208,8 @@ end
 
 --// Router - calls the appropriate adapter based on _G.UILibName
 function _2.CreateWindow(_3, _4)
-    local libName = _G.UILibName or "Frosty"
-    if libName == "Frosty" then
-        return FrostyCreateWindow(_3, _4)
-    elseif libName == "Pepsi" then
+    local libName = _G.UILibName or "Orion"
+    if libName == "Pepsi" then
         return PepsiCreateWindow(_3, _4)
     elseif libName == "Orion" then
         return OrionCreateWindow(_3, _4)
